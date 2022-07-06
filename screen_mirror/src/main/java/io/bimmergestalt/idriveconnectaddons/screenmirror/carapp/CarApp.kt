@@ -47,7 +47,7 @@ class CarApp(val iDriveConnectionStatus: IDriveConnectionStatus, securityAccess:
         }
         val dimensions = RHMIDimensions.create(capabilities)
         val centeredWidth = dimensions.rhmiWidth - 2 * (dimensions.marginLeft + dimensions.paddingLeft)
-        screenMirrorProvider.setSize(centeredWidth + 50, dimensions.appHeight + 50)
+        screenMirrorProvider.setSize(centeredWidth, dimensions.appHeight)
 
         createAmApp()
 
@@ -190,7 +190,11 @@ class CarApp(val iDriveConnectionStatus: IDriveConnectionStatus, securityAccess:
                 val speed = data.optDouble("speedActual", 0.0)
                 val moving = speed > 0
                 val carMode = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_CAR
-                screenMirrorProvider.minFrameTime = 0
+                if (moving && !carMode) {
+                    screenMirrorProvider.minFrameTime = 1000
+                } else {
+                    screenMirrorProvider.minFrameTime = 0
+                }
             }
         }
     }
