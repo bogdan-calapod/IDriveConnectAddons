@@ -5,17 +5,27 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.0"
 
     defaultConfig {
         applicationId "io.bimmergestalt.idriveconnectaddons.cdsdetails"
+        compileSdk 33
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release
+    }
+    if (System.getenv("CI") == "true") {
+        // configure keystore
+        signingConfigs.release.storeFile = file("../keystore.jks")
+        signingConfigs.release.storePassword = System.getenv("KEYSTORE_PASSWORD")
+        signingConfigs.release.keyAlias = System.getenv("KEYSTORE_ALIAS")
+        signingConfigs.release.keyPassword = System.getenv("KEYSTORE_ALIAS_PASSWORD")
     }
 
     buildFeatures {
@@ -25,6 +35,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -34,6 +45,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'io.bimmergestalt.idriveconnectaddons.cdsdetails'
 }
 
 repositories {

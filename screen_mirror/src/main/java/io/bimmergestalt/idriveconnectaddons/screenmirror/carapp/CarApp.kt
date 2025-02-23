@@ -45,9 +45,8 @@ class CarApp(val iDriveConnectionStatus: IDriveConnectionStatus, securityAccess:
         } else {
             carConnection.rhmi_getCapabilities("", 255).map { it.key as String to it.value as String }.toMap()
         }
-        val dimensions = RHMIDimensions.create(capabilities)
-        val centeredWidth = dimensions.rhmiWidth - 2 * (dimensions.marginLeft + dimensions.paddingLeft)
-        screenMirrorProvider.setSize(centeredWidth + 50, dimensions.appHeight + 50)
+        rhmiDimensions = RHMIDimensions.create(capabilities)
+        screenMirrorProvider.setSize(rhmiDimensions.visibleWidth, rhmiDimensions.visibleHeight)
 
         createAmApp()
 

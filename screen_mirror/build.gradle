@@ -9,17 +9,27 @@ repositories {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "31.0.0"
 
     defaultConfig {
         applicationId "io.bimmergestalt.idriveconnectaddons.screenmirror"
+        compileSdk 33
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release
+    }
+    if (System.getenv("CI") == "true") {
+        // configure keystore
+        signingConfigs.release.storeFile = file("../keystore.jks")
+        signingConfigs.release.storePassword = System.getenv("KEYSTORE_PASSWORD")
+        signingConfigs.release.keyAlias = System.getenv("KEYSTORE_ALIAS")
+        signingConfigs.release.keyPassword = System.getenv("KEYSTORE_ALIAS_PASSWORD")
     }
 
     buildFeatures {
@@ -29,6 +39,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -38,6 +49,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'io.bimmergestalt.idriveconnectaddons.screenmirror'
 }
 
 def RHMISources = [
@@ -116,7 +128,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.activity:activity-ktx:1.3.1'
 
-    implementation 'io.bimmergestalt:IDriveConnectKitAndroid:0.2'
+    implementation 'io.bimmergestalt:IDriveConnectKitAndroid:0.6'
     implementation project(path: ':lib')
 
     testImplementation 'junit:junit:4.+'

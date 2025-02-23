@@ -1,7 +1,7 @@
 # IDriveConnectAddons
 
 The Connected Apps protocol is very powerful and provides an unparalleled convergence experience.
-While the AAIdrive app focuses on a specific feature set, creative people could implement their own ideas to unlock other functionality!
+While the AAIdrive app focuses on a specific feature set, addons providing extra functionality have been [built and released](https://github.com/BimmerGestalt/IDriveConnectAddons/releases) and creative people could implement their own ideas to unlock other possibilities!
 
 # Current Integrations
 
@@ -19,6 +19,7 @@ There's also the concept of a Car Connection Addon, which starts up and shuts do
 
 - [screen_mirror](screen_mirror) adds an app to the car to show a copy of the phone screen on the car's screen.
 - [Hass Gestalt](https://github.com/BimmerGestalt/HassGestalt) provides access to Home Assistant dashboards in the car's screen
+- [ReadYou Gestalt](https://github.com/BimmerGestalt/ReadYou) adds an RSS news app to the car's screen, based on [ReadYou](https://f-droid.org/packages/me.ash.reader/)
 
 # Future Ideas
 
@@ -27,9 +28,10 @@ There's also the concept of a Car Connection Addon, which starts up and shuts do
 The car provides [so much data](https://bimmergestalt.github.io/BMWConnectedAnalysis/cds/), what are possible ways to use it?
 
 - Trip logger, both locally and to the cloud in real-time
+- Fuel logger, automatically reporting fill-ups to Fuelly or Spritmonitor
 - Scrobbling of car-sourced music such as SiriusXM or USB (basic implementation in [bimmerscrobbler](bimmerscrobbler))
 - Live gauges display of some basic performance data, without needing extra hardware (simple example in [cds_gauges](cds_gauges))
-- Car race recording, inspired by BMW M Laptimer (one approach enabled with [androbd_gestalt](androbd_gestalt))
+- Car race recording, inspired by BMW M Laptimer (one attempt with [androbd_gestalt](androbd_gestalt))
 - Automatically load VIN from the car to decode the list of options that the car came with
 
 ## Legacy Apps
@@ -37,7 +39,7 @@ The car provides [so much data](https://bimmergestalt.github.io/BMWConnectedAnal
 There were previously some incredibly innovative features using the Connected Apps protocol, perhaps they can be brought back and updated?
 
 - Official Twitter client could be reused for Mastodon
-- Perhaps integrated with the official RSS News reader
+- Official RSS News reader (implemented as a [fork of ReadYou](https://github.com/BimmerGestalt/ReadYou))
 - Dynamic Music would be fun
 - Sports Displays could be reused for accelerometer display, perhaps?
 - Smart Things could be a frontend for Home Assistant (implemented as [Hass Gestalt](https://github.com/BimmerGestalt/HassGestalt))
@@ -64,7 +66,7 @@ By using AM App Icons as launchers into other apps, we can essentially create cu
 
 The protocol has some other APIs which haven't been fully explored, such as the Map api that takes a KMZ file. This might enable some fun features:
 
-- Add a POI layer to show speed traps (blitzer.de Flitsmeister Yasonik, for example). OSM has some of [this data](https://wiki.openstreetmap.org/wiki/Relation:enforcement).
+- Add a POI layer to show speed traps (blitzer.de Flitsmeister Yanosik, for example). OSM has some of [this data](https://wiki.openstreetmap.org/wiki/Relation:enforcement).
 - Add a POI layer to show addresses of contacts from the phone's address book
 
 Turns out this map functionality is less of a POI layer and more like a mini map showing search results, which lends itself to different functionality:

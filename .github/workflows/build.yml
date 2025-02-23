@@ -8,16 +8,21 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout the project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: true
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
 
       - name: Prepare cached external dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: addons_external_${{ hashFiles('.github/actions/download-externals-action/download.sh') }}
           path: |
@@ -27,10 +32,25 @@ jobs:
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: Build the project
+
+      - name: Extract signing key
+        if: github.repository == 'BimmerGestalt/IDriveConnectAddons' && github.ref == 'refs/heads/main'
+        run: "echo '${{ secrets.KEYSTORE_BASE64 }}' | base64 -d > keystore.jks"
+
+      - name: Build the project (debug mode)
+        if: github.repository != 'BimmerGestalt/IDriveConnectAddons' || github.ref != 'refs/heads/main'
         run: ./gradlew assembleDebug
+
+      - name: Build the project (release mode)
+        if: github.repository == 'BimmerGestalt/IDriveConnectAddons' && github.ref == 'refs/heads/main'
+        run: ./gradlew assembleRelease
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: upload
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
+
       - name: Upload APKs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           retention-days: 60
           name: apk
@@ -40,14 +60,14 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout the project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Delete previous release
-        uses: dev-drprasad/delete-older-releases@v0.2.0
+        uses: dev-drprasad/delete-older-releases@v0.2.1
         with:
           keep_latest: 0
           delete_tag_pattern: latest_build
@@ -55,18 +75,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update the latest_build tag
         run: |
-          git config user.name 'Github Actions'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git tag -f -m "Latest Build" latest_build
           git push -f origin latest_build
 
       - name: Download project artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: apk
       - name: Stage upload directory
         run: |
           mkdir dist
-          cp */build/outputs/apk/debug/*apk dist/
+          cp */build/outputs/apk/*/*apk dist/
       - name: Upload to Github releases
         uses: svenstaro/upload-release-action@v2
         with:
